@@ -1,0 +1,164 @@
+﻿@model List<Ordene>
+
+@{
+    ViewData["Title"] = "SistemaControl";
+}
+<br />
+<h1>Ordenes</h1>
+<br />
+<div class="row" style="">
+    <div class="col-md-4  col-sm-4" style="min-height: 450px;position: relative;">
+        <table id="TablaDo" class="table">
+        <thead>
+            <tr>
+                    <th class="text-center bg-danger" colspan="3"><span style="margin-left: 15%;">TO DO</span><span style="float:right"><a class="btn btn-sm btn-warning" id="btnReload">Refresh</a></span></th>
+            </tr>
+        </thead>
+            <tbody>
+                @foreach (var orden in Model.Where(n => n.Estado == 1))
+                {
+                    <tr style="">
+                        <td style="display:none;">@orden.IdOrden</td>
+                        <td style="width:15%"><input type="checkbox" id="@orden.IdOrden" /></td>
+                        <td class="text-center">@("OS " + orden.IdOrden)</td>
+                    </tr>
+                }
+        </tbody>
+    </table>
+        <a class="btn btn-sm btn-warning" id="btnIniciar" style="position: absolute;bottom: 10px;width: 100px;" data-bs-toggle="modal" data-bs-target="#divTipo" onclick="">Iniciar</a>
+    </div>
+    <div class="col-md-4  col-sm-4" style="min-height: 450px;position: relative;">
+        <table id="TablaProcess" class="table">
+            <thead>
+                <tr>
+                    <th class="text-center bg-warning" colspan="3">IN PROCESS</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var orden in Model.Where(n => n.Estado == 3 || n.Estado == 2))
+                {
+                    <tr style="">
+                        <td style="display:none;">@orden.IdOrden</td>
+                        <td style="width:15%"><input type="checkbox" id="@orden.IdOrden" /></td>
+                        <td class="text-center">@("OS " + orden.IdOrden)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a class="btn btn-sm btn-success" style="position: absolute;bottom: 10px;width: 100px;" id="btnFin" onclick="">Fin</a>
+    </div>
+    <div class="col-md-4  col-sm-4" style="min-height: 450px;position: relative;">
+        <table id="TablaDone" class="table">
+            <thead>
+                <tr>
+                    <th class="text-center bg-success" colspan="2">DONE</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var orden in Model.Where(n => n.Estado == 4))
+                {
+                    <tr style="">
+                        <td style="display:none;">@orden.IdOrden</td>
+                        <td class="text-center">@("OS " + orden.IdOrden)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="divTipo" class="modal fade" tabindex="-1" data-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="modalTitulo">Seleccione la etapa</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="frmTipo" role="form">
+                    <div class="form-group">
+                        <label for="ddlTipo">Tipo de trabajo</label>
+                        <select class="form-select" id="ddlTipo" name="ddlTipo">
+                            <option value="-1">--Seleccionar--</option>
+                            <option value="1">ARMADO</option>
+                            <option value="2">DESARME</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnStart" type="button" class="btn btn-info">Continuar</button>
+                <a href="#" data-bs-dismiss="modal" class="btn btn-info">Cancelar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        var ordenes = [];
+
+        $('#btnReload').click(function () {
+            location.reload();
+        });
+
+        $('#btnIniciar').click(function() {
+
+        });
+
+        $('#btnStart').click(function () {
+
+            $("#TablaDo input[type='checkbox']").each(function () {
+                if ($(this).prop('checked') == true) {
+                    var orden = {
+                        idOrden: $(this).attr("id"),
+                        detalle: "",
+                        estado: 2,
+                        tipo: parseInt($('#ddlTipo').val())
+                    };
+
+                    ordenes.push(orden);
+                }
+            });
+
+            $.ajax({
+                async: true,
+                type: 'POST',
+                url: '/Home/UpdateOrden',
+                //contentType: "application/json",
+                data: { "ordenes": ordenes },
+                dataType: "json",
+                success: function (result) {
+                    
+
+                    $.ajax({
+                        dataType: "html",
+                        type: "POST",
+                        url: '/Home/Process',
+                        data: { "ordenes": ordenes },
+                        success: function (a) {
+                            $('#mainhtml').html(a);
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                        }
+                    });
+
+                    location.reload();
+
+                    ordenes = [];
+
+                        //$.notify(result.mensaje, { className: "success", position: "bottom right", autoHideDelay: 5000 });
+                        //$("#ajaxContentMain").load('/Consulta/ReporteLite?idLabParticipant=' + idLabparticipant);
+                },
+                error: function (req, stat, err) {
+                    ordenes = [];
+                    var error = eval("(" + req.responseText + ")");
+                    $.alert(error.Message);
+                }
+            });
+        });
+    </script>
+}

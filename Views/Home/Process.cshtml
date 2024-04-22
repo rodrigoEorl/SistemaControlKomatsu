@@ -1,0 +1,23 @@
+﻿@model List<Ordene>
+
+@{
+    ViewData["Title"] = "SistemaControl";
+}
+<br />
+<h1>Ordenes</h1>
+<br />
+<div class="row" style="">
+    <div class="" style="border-bottom:none">
+
+        <a data-dismiss="modal" class="close" style="padding:10px">×</a>
+        <ul class="nav nav-tabs" style="padding: 10px 10px 0px 10px;">
+            @foreach (var orden in Model)
+            {
+                <li class="nav-item active" id="@("tab" + orden.IdOrden)">
+                    <a class="nav-link" href="#"></a>
+                </li>
+            }
+        </ul>
+
+    </div>
+</div>
