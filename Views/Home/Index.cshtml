@@ -133,25 +133,23 @@
                 dataType: "json",
                 success: function (result) {
                     
+                    //$("#")
+                    // $.ajax({
+                    //     dataType: "Html",
+                    //     type: "POST",
+                    //     url: '/Home/Process',
+                    //     data: { "ordenes": ordenes },
+                    //     success: function (a) {
+                    //         $('#mainhtml').html(a);
+                    //     },
+                    //     error: function (jqXHR, textStatus, errorThrown) {
+                    //     }
+                    // });
 
-                    $.ajax({
-                        dataType: "html",
-                        type: "POST",
-                        url: '/Home/Process',
-                        data: { "ordenes": ordenes },
-                        success: function (a) {
-                            $('#mainhtml').html(a);
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                        }
-                    });
-
-                    location.reload();
-
+                    // location.reload();
+                    window.open(window.location.href);
+                    $("#mainhtml").load('/Home/Process', { "ordenes": ordenes });
                     ordenes = [];
-
-                        //$.notify(result.mensaje, { className: "success", position: "bottom right", autoHideDelay: 5000 });
-                        //$("#ajaxContentMain").load('/Consulta/ReporteLite?idLabParticipant=' + idLabparticipant);
                 },
                 error: function (req, stat, err) {
                     ordenes = [];

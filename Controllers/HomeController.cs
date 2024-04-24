@@ -20,8 +20,6 @@ namespace SistemaControl.Controllers
             List<Ordene> ordenes = _dbContext.Ordenes.ToList();
             return View(ordenes);
         }
-
-        [HttpPost]
         public ActionResult Process(List<Ordene> ordenes)
         {
             ViewBag.InterNoPlan = _dbContext.Maestros.Where(p => p.Codigo == "[NOPLANINTERRUPCION]").ToList();
